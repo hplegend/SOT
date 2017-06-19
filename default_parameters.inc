@@ -4,7 +4,7 @@
 #define NONPLANTWIST 90.0f
 #define VOXDEN		201
 #define SPAN		200
-#define MAXITER		17
+#define MAXITER		8
 #define NCYLINC		100000
 #define INITWIDTH	0.1f
 #define NODELENGTH 	1.0f

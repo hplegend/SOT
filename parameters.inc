@@ -4,7 +4,7 @@
 #define NONPLANTWIST 90.0f
 #define VOXDEN		201
 #define SPAN		200
-#define MAXITER		7
+#define MAXITER		8
 #define NCYLINC		100000
 #define INITWIDTH	0.1f
 #define NODELENGTH 	1.0f
@@ -13,7 +13,7 @@
 #define REORIENT 	0.4f
 #define REDIRSTREN 	0.4f
 #define	TROPISM 	0.02f
-#define	LEAFINESS 	0.0
+#define	LEAFINESS 	0.11f
 #define	NONLINEAR 	1.0f
 #define INITLAM 0.650000
 #define TARGLAM 0.510000
