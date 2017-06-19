@@ -1,0 +1,120 @@
+1.2.8:
+i) MAXNCYL and MAXLIVECYL macros define the max number of cylinders and max
+number of active/live cylinders (not deleted). This will prevent ever lasting
+calculations of models which are useless anyway.
+ii) Independent counter of deleted cylinders nDel.
+iii) Description of the parameters in parameters.inc file
+
+1.2.7:
+i) Very small bug caused serious miscalculations in scatters. Namely, wrong
+order assignment during empirical topology extraction algorithm call.
+The order for the empirical topology was derived based on the order of 
+the extension (for extension), but not based on the order of the 1st cyl
+in the branch (as for children).
+
+ii) When deleting cyl's, adjust topological information of the cyl itself. Although
+it is not ultimately necessary (because all "ways" to the cyl are removed:
+topology info of the parent and its offsets is removed) it is a better
+practice to ensure it is devoid completely of any topological information.
+
+iii) Branching angle formation (scatter.cpp) was subject to the precision 
+error => values like 1.0/-1.0 were treated due to the finite precision as
+ones outside the range [-1.0,1.0] which caused ACOS function to produce
+many NaN's to the resulting scatter table. Fixed for checking the finite
+precision of the values: range is [-1.0-1e-04,1.0+1e-04], the values more/less
+than 1.0/-1.0 in this range lead to ACOS(0.99999)/ACOS(-0.99999).
+
+iv) Little problem in the shadow propagation algorithm causing the exposure
+values to become negative and then to grow disproportionally towards -Inf.
+
+
+
+1.2.6:
+i) The growth outside the world span is controlled by the grow() function.
+Not inside the env-class.
+ii) env-class calcuulates the closest voxel even for the segments that are
+(hypothetically) outside the voxel box.
+iii) REDIRSTREN - new constant controlling the maximum limit for the
+strength of redirection of the newly created shoots.
+
+1.2.5:
+VERY IMPORTANT. PREVIOUS VERSIONS MUST BE DEPRECATED!
+i) Fundamental mistake in the code:
+env-class: WORLDtoVOXEL = (DENSITY-1)/(2*SPAN)
+corrected to: WORLDtoVOXEL = DENSITY/SPAN
+This caused overgrowth of the tree beyong actual physical dimensions.
+ii) world_violated is released when voxel index is <0, OR 
+larger or equal to DENSITY, because x = 0 is a valid voxel,
+x = DENSITY is not. No violation for getCornerVoxelIndex()
+when calculating radiation conditions.
+iii) Closest valid voxel code is left. It causes the shadow
+algorithm to finish correctly (without segmentation faults), but the
+world_violated=true is returned by the env-class to indicate the
+physical dimension problems. However, this code is evoked only in case
+of violation to make it more efficient.
+
+
+1.2.4:
+i) New constants introduced:
+VEDGE - edge size of a voxel. If defined VOXDEN is recalculated.
+VEDGEASNODE - edge size as the fraction of NODELENGTH. If defined
+	the VOXDEN is recalculated. VEDGE=NODELENGTH*VEDGEASNODE.
+TSTOP - maximum time in min for simulation to finish. Simulations stops after
+	TSTOP min are elapsed. Useful for long time consuming simulations.
+ii) Empty "scatter.dat" when fatal error occurred.
+
+1.2.3: 
+i) Little patch: EMPTOP flag caused wrong order information assigned to
+branches (detected by having several 0-order branches). When the nominal
+extension (from analytical topology) becomes a real child branch, its
+order is not modified (+1) => this caused the problem. Fixed.
+
+
+1.2.2: ALL PREVIOUS VERSIONS ARE DEPRECATED!
+i) env.hpp from the original model contained a bug initializing exposure
+for the ground level voxels to an infinitely large number, which caused in
+very rare occasions several different results for the same(!) parameters.
+This is very important for the Bayes Forest concept simulations, since
+the model must produce the same result given the same parameters (if the
+random generator seed is fixed). Thus, all older version of the model are
+DEPRECATED by this version. Consult them only for the historical
+development reasons.
+ii) Exposure "lower quality" feature for the bottom level of voxels is
+removed. Now the "floor" layer is initialized as others. The "top" level
+is still zero.
+iii) Parameter names changed from lowercase to uppercase: for all parameters.
+
+
+1.2.1:
+i) Random sampling from simple distributions (gauss,uniform) added. See
+randist.cpp.
+ii) Random random number generator seed for the clones simulation.
+
+1.2.0:
+i) Main addition: introduction of the empirical extraction of topology
+(see EMPTOP macro). Namely, the QSM model, representing a real tree, is
+a time snapshot of the current form. The extraction of topology of QSM 
+is a complicated process, mainly due to the irregularities of the data, but
+the main idea is to extract branches based on the largest radius offset. So, 
+EMPTOP = 1 defines the thickest-radius algorithm, in which the real extension
+of the current cylinder (starting from the base cylinder 0) is a offset-cylinder
+with the largest radius, where offset = extension + children. This way, the analytical 
+topology, which is being traced from the beginning of each simulation, represents
+only physical connections and not real topology. This option is especially
+useful for the tree with main biomass concentrated in the high order of branches,
+for example, very bush-like trees.
+
+1.0.1:
+i) MAXORDER is introduced, branches and scatters of order 
+higher than MAXORDER are not calculated.
+ii) Seg. fault was caused by the deletion of cyl's, when the parent was unknown. Fixed.
+iii) Optionally switch on/off the output MTG, INFO, and scatters (see MTGOUT,
+INFOUT,SCAOUT).
+iv) Screen log file to look at the progress of the simulation.
+v) Timing information on each iteration (to the screen log).
+
+1.0.0:
+i) The modified model from Palubicki et al, Self-organizing
+tree models for image synthesis, ACM Transactions on Graphics 28(3), 58:1-10, 2009.
+ii) Scatters output and more extensive parameterization.
+iii) Possibility for the sympodial type of growth (see SYMPOD macro) 
